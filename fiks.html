@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CBT Bahasa Indonesia - 30 Soal HOTS</title>
+<style>
+  :root{
+    --blue-900:#0b3d91;
+    --blue-700:#1565c0;
+    --bg:#f3f6fb;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --ok:#16a34a;
+    --ragu:#facc15;
+    --border:#e6eef8;
+  }
+  *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+  body{margin:0;background:var(--bg);color:#0f1724;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:18px;}
+  .card{width:100%;max-width:1200px;background:var(--card);border-radius:12px;box-shadow:0 8px 30px rgba(11,61,145,0.08);padding:20px;}
+  .hidden{display:none}
+  /* LOGIN portrait */
+  #login-card{
+    width:100%;
+    max-width:380px;
+    background:white;
+    border-radius:16px;
+    box-shadow:0 6px 30px rgba(0,0,0,0.08);
+    padding:36px 30px;
+    text-align:center;
+    margin:40px auto;
+  }
+  #login-card h1{margin:0;font-size:28px;color:var(--blue-900)}
+  #login-card p.sub{margin:8px 0 20px;color:var(--muted)}
+  .form-row{margin-bottom:12px;text-align:left;position:relative}
+  label{display:block;font-weight:600;color:#0f1724;margin-bottom:6px}
+  input[type=text],input[type=password]{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);font-size:15px}
+  .primary-btn{width:100%;background:var(--blue-900);color:white;padding:10px 12px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+  /* preview icon */
+  .toggle-pass{
+    position:absolute;
+    top:36px;
+    right:12px;
+    cursor:pointer;
+    width:22px;
+    height:22px;
+    opacity:0.7;
+  }
+  .toggle-pass svg{width:100%;height:100%;fill:#555}
+  .toggle-pass:hover{opacity:1}
+  /* EXAM */
+  #exam-layout{display:flex;gap:18px}
+  .main{flex:1;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 6px;border-bottom:1px solid var(--border)}
+  .title{font-weight:800;color:var(--blue-900)}
+  .timer{background:var(--blue-700);color:white;padding:6px 12px;border-radius:8px;font-weight:700}
+  .menu-btn{border:none;background:transparent;cursor:pointer;padding:6px}
+  .menu-icon span{display:block;height:2px;background:#0f1724;margin:4px 0;border-radius:2px;width:28px}
+  .soal-area{padding:18px;border-radius:10px;margin-top:16px;background:#fafbff;border:1px solid var(--border);min-height:380px;display:flex;flex-direction:column}
+  .bacaan{background:#f3f7ff;padding:14px;border-radius:8px;border:1px solid var(--border);margin-bottom:12px;line-height:1.6}
+  .question{font-weight:700;margin-bottom:10px}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .opt{padding:12px;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:#fff}
+  .opt.selected{outline:2px solid rgba(21,101,192,0.12);background:#e8f2ff}
+  .nav-corners{display:flex;justify-content:space-between;margin-top:14px}
+  .corner-btn{border:none;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px}
+  #btnPrev{background:#e5e7eb;color:#0f1724}
+  #btnRagu{background:var(--ragu);color:#0f1724}
+  #btnNext{background:var(--blue-900);color:#fff}
+  #drawer{width:300px;background:var(--card);border-radius:10px;padding:12px;border:1px solid var(--border);height:560px;overflow:auto}
+  .qgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .qbtn{position:relative;padding:8px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;text-align:center;font-weight:700}
+  .qbtn.answered{background:#bbf7d0;color:var(--ok)}
+  .qbtn.ragu{background:var(--ragu);color:#0f1724}
+  .qbtn .badge{position:absolute;top:6px;right:6px;background:#fff;border-radius:10px;padding:2px 6px;font-size:11px;border:1px solid var(--border)}
+  .score{font-size:48px;font-weight:900;color:var(--blue-900);margin:8px 0;text-align:center}
+  .review{max-height:360px;overflow:auto;margin-top:12px;text-align:left}
+  .review-item{background:#fbfdff;border:1px solid var(--border);padding:12px;border-radius:8px;margin-bottom:10px}
+  .label-correct{color:var(--ok);font-weight:700}
+  .label-wrong{color:#e02424;font-weight:700}
+</style>
+</head>
+<body>
+  <div class="card" id="container">
+    <!-- LOGIN -->
+    <section id="login-view">
+      <div id="login-card">
+        <h1>SELAMAT DATANG</h1>
+        <p class="sub">Silahkan login terlebih dahulu</p>
+        <div class="form-row">
+          <label>Username</label><input id="inpUser" type="text" autocomplete="off"/>
+        </div>
+        <div class="form-row">
+          <label>Password</label><input id="inpPass" type="password"/>
+          <div class="toggle-pass" id="togglePass" title="Lihat/Sembunyikan Password">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+            </svg>
+          </div>
+        </div>
+        <button id="btnLogin" class="primary-btn">Masuk</button>
+      </div>
+    </section>
+
+    <!-- EXAM -->
+    <section id="exam-view" class="hidden">
+      <div id="exam-layout">
+        <div class="main">
+          <div class="topbar">
+            <div class="title">Ujian CBT Bahasa Indonesia</div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div id="timer" class="timer">60:00</div>
+              <button id="menuToggle" class="menu-btn" title="Daftar Soal (Nomor)"><span class="menu-icon"><span></span><span></span><span></span></span></button>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:18px;margin-top:12px;align-items:flex-start;">
+            <div style="flex:1">
+              <div id="soal-area" class="soal-area"></div>
+
+              <div class="nav-corners">
+                <div><button id="btnPrev" class="corner-btn">← Sebelumnya</button></div>
+                <div><button id="btnRagu" class="corner-btn">Ragu-ragu <span id="tickRagu" style="display:inline-block;width:12px;height:12px;margin-left:8px;border-radius:2px;border:2px solid #fff;vertical-align:middle"></span></button></div>
+                <div><button id="btnNext" class="corner-btn">Selanjutnya →</button></div>
+              </div>
+            </div>
+
+            <aside id="drawer" class="hidden" aria-hidden="true">
+              <div style="font-weight:800;margin-bottom:8px">Daftar Soal</div>
+              <div id="qGrid" class="qgrid"></div>
+              <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+                <div style="display:flex;gap:8px;align-items:center"><div style="width:18px;height:12px;border:1px solid var(--border);border-radius:4px"></div> Belum dijawab</div>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:6px"><div style="width:18px;height:12px;background:linear-gradient(180deg,#ecfdf5,#bbf7d0);border-radius:4px"></div> Sudah dijawab</div>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:6px"><div style="width:18px;height:12px;background:var(--ragu);border-radius:4px"></div> Ragu</div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONFIRM 1 -->
+    <section id="confirm1" class="hidden" style="text-align:center">
+      <h2>Apakah Anda sudah yakin dengan jawaban Anda?</h2>
+      <div style="margin-top:12px">
+        <button id="back1" class="corner-btn" style="margin-right:8px">Kembali</button>
+        <button id="submit1" class="corner-btn" style="background:var(--blue-900);color:#fff">Submit</button>
+      </div>
+    </section>
+
+    <!-- CONFIRM 2 -->
+    <section id="confirm2" class="hidden" style="text-align:center">
+      <h2>Apakah Anda sudah benar-benar yakin dengan jawaban Anda?</h2>
+      <div style="margin-top:12px">
+        <button id="back2" class="corner-btn" style="margin-right:8px">Kembali</button>
+        <button id="submit2" class="corner-btn" style="background:var(--blue-900);color:#fff">Submit</button>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="result-view" class="hidden">
+      <div id="result-area">
+        <div style="text-align:center">
+          <h2>Selamat! Anda telah menyelesaikan ujian Bahasa Indonesia ini</h2>
+          <h3>NILAI</h3>
+          <div id="scoreBox" class="score">0</div>
+          <button id="btnExit" class="corner-btn" style="margin-top:8px">Keluar</button>
+        </div>
+        <h3 style="margin-top:12px">Pembahasan</h3>
+        <div id="reviewList" class="review"></div>
+      </div>
+    </section>
+  </div>
+
+<script>
+/* ========== preview password ========== */
+const inpPass = document.getElementById('inpPass');
+const togglePass = document.getElementById('togglePass');
+if (togglePass && inpPass) {
+  togglePass.addEventListener('click', ()=>{
+    const type = inpPass.getAttribute('type') === 'password' ? 'text' : 'password';
+    inpPass.setAttribute('type', type);
+  });
+}
+
+/* ========== SETTINGS ========== */
+const TOTAL = 30;
+let current = 0;
+let timeLeft = 60 * 60; // seconds
+let timerInterval = null;
+let warned30 = false;
+let loggedIn = false;
+
+/* answer state */
+let answers = Array(TOTAL).fill(null);
+let ragu = Array(TOTAL).fill(false);
+
+/* ========== QUESTION BANK (30 HOTS mixed) ========== */
+/* Note: several questions share a passage (literasi) to simulate typical HOTS test items */
+const bank = [
+/* 1-3 Passage 1 (literasi digital) */
+{
+  passage: `(Bacaan 1) Era informasi digital memudahkan akses berita dan pendapat. Namun demikian, arus informasi yang cepat tidak selalu sejalan dengan kualitas verifikasi. Pembaca kritis perlu mengecek sumber, memeriksa bukti, dan membedakan antara berita faktual dan opini demi menjaga kebijakan publik yang sehat.`,
+  q: `Ide pokok bacaan di atas adalah...`,
+  options: [
+    "Teknologi menghapus kebutuhan verifikasi",
+    "Pentingnya kritis dalam menilai informasi digital",
+    "Semua berita online harus dipercaya",
+    "Hanya pakar yang boleh mengakses informasi",
+    "Opini sama dengan fakta"
+  ],
+  correct: 1,
+  pembahasan: `Teks menekankan perlunya pembaca kritis untuk menilai kualitas informasi digital.`
+},
+{
+  passage: `(Bacaan 1) Era informasi digital memudahkan akses berita dan pendapat. Namun demikian, arus informasi yang cepat tidak selalu sejalan dengan kualitas verifikasi. Pembaca kritis perlu mengecek sumber, memeriksa bukti, dan membedakan antara berita faktual dan opini demi menjaga kebijakan publik yang sehat.`,
+  q: `Strategi yang paling tepat untuk membedakan fakta dan opini menurut teks adalah...`,
+  options: [
+    "Membaca judul saja",
+    "Mengecek sumber dan bukti pendukung",
+    "Membagikan sebelum membaca lengkap",
+    "Mengandalkan komentar pengguna",
+    "Mengabaikan semua informasi"
+  ],
+  correct: 1,
+  pembahasan: `Teks menyarankan pengecekan sumber dan bukti sebagai strategi verifikasi.`
+},
+{
+  passage: `(Bacaan 1) Era informasi digital memudahkan akses berita dan pendapat. Namun demikian, arus informasi yang cepat tidak selalu sejalan dengan kualitas verifikasi. Pembaca kritis perlu mengecek sumber, memeriksa bukti, dan membedakan antara berita faktual dan opini demi menjaga kebijakan publik yang sehat.`,
+  q: `Kalimat "membedakan antara berita faktual dan opini" paling dekat maknanya dengan...`,
+  options: [
+    "Menentukan sumber berita",
+    "Melakukan verifikasi isi berita",
+    "Menulis opini pribadi",
+    "Menghapus opini dari situs",
+    "Membuat berita baru"
+  ],
+  correct: 1,
+  pembahasan: `Membedakan fakta dan opini berkaitan erat dengan verifikasi isi.`
+},
+
+/* 4-6 Passage 2 (air dan konservasi) */
+{
+  passage: `(Bacaan 2) Ketersediaan air bersih semakin terancam oleh pencemaran industri dan praktik penggunaan yang tidak berkelanjutan. Upaya konservasi dituntut melibatkan edukasi masyarakat, kebijakan pengelolaan sumber daya, dan implementasi teknologi ramah lingkungan.`,
+  q: `Menurut teks, upaya efektif menjaga air bersih melibatkan...`,
+  options: [
+    "Hanya teknologi canggih",
+    "Edukasi masyarakat, kebijakan, dan teknologi ramah lingkungan",
+    "Mengabaikan praktik masyarakat",
+    "Privatisasi total sumber air",
+    "Mengalihkan penduduk dari daerah rawan"
+  ],
+  correct: 1,
+  pembahasan: `Teks menyebut kombinasi edukasi, kebijakan, dan teknologi sebagai solusi.`
+},
+{
+  passage: `(Bacaan 2) Ketersediaan air bersih semakin terancam oleh pencemaran industri dan praktik penggunaan yang tidak berkelanjutan. Upaya konservasi dituntut melibatkan edukasi masyarakat, kebijakan pengelolaan sumber daya, dan implementasi teknologi ramah lingkungan.`,
+  q: `Frasa "praktik penggunaan yang tidak berkelanjutan" pada teks menandakan...`,
+  options: [
+    "Praktik yang merusak sumber daya dalam jangka panjang",
+    "Praktik yang hemat air",
+    "Teknologi baru yang efisien",
+    "Perbaikan infrastruktur semata",
+    "Komersialisasi air bersih"
+  ],
+  correct: 0,
+  pembahasan: `Istilah tersebut menunjukkan penggunaan yang merusak sumber daya secara berkelanjutan.`
+},
+{
+  passage: `(Bacaan 2) Ketersediaan air bersih semakin terancam oleh pencemaran industri dan praktik penggunaan yang tidak berkelanjutan. Upaya konservasi dituntut melibatkan edukasi masyarakat, kebijakan pengelolaan sumber daya, dan implementasi teknologi ramah lingkungan.`,
+  q: `Pernyataan yang paling sesuai sebagai kesimpulan teks adalah...`,
+  options: [
+    "Air bersih tidak penting",
+    "Perlu langkah terpadu untuk konservasi air",
+    "Industri tidak berpengaruh pada ketersediaan air",
+    "Hanya pemerintah yang bertanggung jawab",
+    "Teknologi dapat menggantikan kebijakan"
+  ],
+  correct: 1,
+  pembahasan: `Teks menyarankan langkah terpadu melibatkan berbagai pihak untuk konservasi air.`
+},
+
+/* 7-9 Passage 3 (analisis wacana) */
+{
+  passage: `(Bacaan 3) Analisis wacana memperhatikan pilihan kata, struktur kalimat, dan strategi retorik untuk mengetahui sikap penulis. Konotasi kata dapat membentuk persepsi pembaca, sehingga pembaca kritis harus peka terhadap muatan nilai yang tersirat.`,
+  q: `Fokus utama analisis wacana menurut teks adalah...`,
+  options: [
+    "Gaya tata letak",
+    "Pilihan kata, struktur, dan strategi retorik",
+    "Penggunaan font",
+    "Jumlah paragraf",
+    "Jumlah kata per kalimat"
+  ],
+  correct: 1,
+  pembahasan: `Analisis wacana mempelajari unsur leksikal, struktur, dan retorika.`
+},
+{
+  passage: `(Bacaan 3) Analisis wacana memperhatikan pilihan kata, struktur kalimat, dan strategi retorik untuk mengetahui sikap penulis. Konotasi kata dapat membentuk persepsi pembaca, sehingga pembaca kritis harus peka terhadap muatan nilai yang tersirat.`,
+  q: `Konotasi kata dimaksudkan untuk...`,
+  options: [
+    "Makna literal semata",
+    "Makna implisit dan muatan nilai",
+    "Aturan ejaan",
+    "Jenis huruf",
+    "Struktur paragraf saja"
+  ],
+  correct: 1,
+  pembahasan: `Konotasi merujuk pada makna implisit dan nilai yang dibawa kata.`
+},
+{
+  passage: `(Bacaan 3) Analisis wacana memperhatikan pilihan kata, struktur kalimat, dan strategi retorik untuk mengetahui sikap penulis. Konotasi kata dapat membentuk persepsi pembaca, sehingga pembaca kritis harus peka terhadap muatan nilai yang tersirat.`,
+  q: `Salah satu tujuan pembaca kritis adalah...`,
+  options: [
+    "Menerima wacana tanpa pertanyaan",
+    "Mendeteksi muatan nilai dan tujuan penulis",
+    "Menghapus opini penulis",
+    "Mengubah struktur kalimat",
+    "Mencetak ulang teks"
+  ],
+  correct: 1,
+  pembahasan: `Pembaca kritis bertugas mengenali tujuan penulis dan muatan nilai teks.`
+},
+
+/* 10-12 Passage 4 (neologisme & bahasa) */
+{
+  passage: `(Bacaan 4) Perkembangan istilah baru (neologisme) dalam suatu bahasa muncul untuk menjawab kebutuhan zaman. Sebuah istilah baru efektif bila memudahkan komunikasi dan tidak bertentangan dengan prinsip tata bahasa yang berlaku.`,
+  q: `Syarat penting agar neologisme diterima luas menurut teks adalah...`,
+  options: [
+    "Bersifat eksklusif untuk kelompok kecil",
+    "Memudahkan komunikasi dan konsisten pada tata bahasa",
+    "Sulit dipahami",
+    "Membingungkan pembaca",
+    "Mengganti semua kata lama"
+  ],
+  correct: 1,
+  pembahasan: `Teks menyebut kemudahan komunikasi dan konsistensi tata bahasa sebagai syarat.`
+},
+{
+  passage: `(Bacaan 4) Perkembangan istilah baru (neologisme) dalam suatu bahasa muncul untuk menjawab kebutuhan zaman. Sebuah istilah baru efektif bila memudahkan komunikasi dan tidak bertentangan dengan prinsip tata bahasa yang berlaku.`,
+  q: `Neologisme paling tepat diartikan sebagai...`,
+  options: [
+    "Kata baru atau istilah baru",
+    "Kesalahan penulisan",
+    "Jenis teks lama",
+    "Variasi ejaan",
+    "Tanda baca"
+  ],
+  correct: 0,
+  pembahasan: `Neologisme adalah istilah/kata baru yang muncul menyesuaikan kebutuhan.`
+},
+{
+  passage: `(Bacaan 4) Perkembangan istilah baru (neologisme) dalam suatu bahasa muncul untuk menjawab kebutuhan zaman. Sebuah istilah baru efektif bila memudahkan komunikasi dan tidak bertentangan dengan prinsip tata bahasa yang berlaku.`,
+  q: `Mengapa konsistensi tata bahasa penting untuk neologisme?`,
+  options: [
+    "Agar istilah mudah digunakan dan dipahami secara luas",
+    "Agar istilah hanya untuk pakar",
+    "Agar istilah sulit diakses",
+    "Supaya orang bingung",
+    "Agar istilah tidak dipakai lagi"
+  ],
+  correct: 0,
+  pembahasan: `Konsistensi tata bahasa mempermudah penerimaan istilah sehingga dapat digunakan luas.`
+},
+
+/* 13-15 Passage 5 (penyuntingan & kohesi) */
+{
+  passage: `(Bacaan 5) Penyuntingan teks bertujuan meningkatkan kejelasan dengan memperbaiki struktur dan menghilangkan redundansi. Kohesi antarkalimat menjaga alur pikiran agar pembaca tidak kehilangan benang merah.`,
+  q: `Fungsi utama penyuntingan menurut teks adalah...`,
+  options: [
+    "Menambah redundansi",
+    "Meningkatkan kejelasan dan kohesi",
+    "Menghapus ide penting",
+    "Menyisipkan iklan",
+    "Menambah panjang teks"
+  ],
+  correct: 1,
+  pembahasan: `Penyuntingan berfungsi menyederhanakan teks agar lebih jelas dan kohesif.`
+},
+{
+  passage: `(Bacaan 5) Penyuntingan teks bertujuan meningkatkan kejelasan dengan memperbaiki struktur dan menghilangkan redundansi. Kohesi antarkalimat menjaga alur pikiran agar pembaca tidak kehilangan benang merah.`,
+  q: `Istilah 'kohesi' dalam teks berarti...`,
+  options: [
+    "Keterpaduan antarbagian teks",
+    "Penghapusan paragraf",
+    "Penambahan kata acak",
+    "Pengubahan font",
+    "Pemotongan kalimat saja"
+  ],
+  correct: 0,
+  pembahasan: `Kohesi menunjukkan keterkaitan antarbagian teks sehingga alur jelas.`
+},
+{
+  passage: `(Bacaan 5) Penyuntingan teks bertujuan meningkatkan kejelasan dengan memperbaiki struktur dan menghilangkan redundansi. Kohesi antarkalimat menjaga alur pikiran agar pembaca tidak kehilangan benang merah.`,
+  q: `Langkah efektif dalam penyuntingan untuk menjaga kohesi adalah...`,
+  options: [
+    "Menyusun ulang kalimat agar relasi antaride jelas",
+    "Menambahkan banyak kata sambung tanpa tujuan",
+    "Mengganti semua kata kunci",
+    "Menggunakan kalimat sangat panjang",
+    "Menghapus semua konjungsi"
+  ],
+  correct: 0,
+  pembahasan: `Menyusun ulang kalimat dapat memperjelas relasi antaride sehingga kohesi terjaga.`
+},
+
+/* 16-18 Passage 6 (retorika) */
+{
+  passage: `(Bacaan 6) Retorika melibatkan penggunaan ethos, pathos, dan logos. Pidato yang efektif mengombinasikan ketiganya secaraimbang untuk memengaruhi audiens tanpa mengabaikan fakta.`,
+  q: `Manakah kombinasi retorika yang ideal menurut teks?`,
+  options: [
+    "Hanya pathos",
+    "Ethos, pathos, dan logos seimbang",
+    "Hanya ethos",
+    "Hanya logos",
+    "Tanpa retorika"
+  ],
+  correct: 1,
+  pembahasan: `Teks menyebut keseimbangan ketiganya sebagai kunci retorika efektif.`
+},
+{
+  passage: `(Bacaan 6) Retorika melibatkan penggunaan ethos, pathos, dan logos. Pidato yang efektif mengombinasikan ketiganya secaraimbang untuk memengaruhi audiens tanpa mengabaikan fakta.`,
+  q: `Contoh 'logos' pada pidato adalah...`,
+  options: [
+    "Kisah emosional",
+    "Data dan bukti logis",
+    "Sertifikasi penulis",
+    "Kritik personal",
+    "Drama panggung"
+  ],
+  correct: 1,
+  pembahasan: `Logos berkaitan dengan alasan dan bukti logis yang digunakan dalam argumen.`
+},
+{
+  passage: `(Bacaan 6) Retorika melibatkan penggunaan ethos, pathos, dan logos. Pidato yang efektif mengombinasikan ketiganya secaraimbang untuk memengaruhi audiens tanpa mengabaikan fakta.`,
+  q: `Bahaya penggunaan retorika yang tidak terkawal adalah...`,
+  options: [
+    "Meningkatkan kualitas data",
+    "Mengabaikan bukti demi emosi",
+    "Memperjelas argumen ilmiah",
+    "Memperkuat metodologi riset",
+    "Menambah referensi"
+  ],
+  correct: 1,
+  pembahasan: `Teks memperingatkan retorika bisa menyesatkan jika bukti diabaikan.`
+},
+
+/* 19-21 Passage 7 (diksi & register) */
+{
+  passage: `(Bacaan 7) Pemilihan diksi menentukan register teks. Diksi formal cocok untuk karya akademik, sedangkan diksi kolokial pas untuk percakapan santai. Penulis harus menyelaraskan diksi dengan tujuan komunikasi.`,
+  q: `Penyesuaian diksi bertujuan...`,
+  options: [
+    "Membuat pesan sesuai tujuan komunikasi",
+    "Membuat teks tidak bisa dimengerti",
+    "Menghilangkan isi teks",
+    "Mengganti topik utama",
+    "Membuat teks lebih panjang"
+  ],
+  correct: 0,
+  pembahasan: `Diksi disesuaikan agar pesan efektif dan sesuai tujuan.`
+},
+{
+  passage: `(Bacaan 7) Pemilihan diksi menentukan register teks. Diksi formal cocok untuk karya akademik, sedangkan diksi kolokial pas untuk percakapan santai. Penulis harus menyelaraskan diksi dengan tujuan komunikasi.`,
+  q: `Contoh penggunaan diksi kolokial yang tepat adalah pada...`,
+  options: [
+    "Artikel jurnal ilmiah",
+    "Percakapan santai antar teman",
+    "Surat resmi pemerintahan",
+    "Dokumen kebijakan publik",
+    "Skripsi doktoral"
+  ],
+  correct: 1,
+  pembahasan: `Diksi kolokial lebih cocok untuk percakapan santai, bukan teks formal.`
+},
+{
+  passage: `(Bacaan 7) Pemilihan diksi menentukan register teks. Diksi formal cocok untuk karya akademik, sedangkan diksi kolokial pas untuk percakapan santai. Penulis harus menyelaraskan diksi dengan tujuan komunikasi.`,
+  q: `Diksi formal biasanya ditandai oleh...`,
+  options: [
+    "Bahasa baku dan struktur kalimat kompleks",
+    "Singkatan-singkatanyangkasar",
+    "Emoji dan singkatan",
+    "Bahasa daerah murni",
+    "Tidak menggunakan tanda baca"
+  ],
+  correct: 0,
+  pembahasan: `Diksi formal memakai bahasa baku dan struktur yang lebih kompleks.`
+},
+
+/* 22-24 Passage 8 (struktur eksposisi) */
+{
+  passage: `(Bacaan 8) Teks eksposisi biasanya diawali pernyataan umum, diikuti argumen dan bukti, lalu penegasan kembali. Kejelasan struktur membantu pembaca memahami klaim penulis.`,
+  q: `Urutan struktur eksposisi yang benar adalah...`,
+  options: [
+    "Argumen → Penegasan → Pernyataan umum",
+    "Pernyataan umum → Argumen → Penegasan ulang",
+    "Penegasan → Pernyataan umum → Argumen",
+    "Argumen acak tanpa urutan",
+    "Hanya pernyataan umum"
+  ],
+  correct: 1,
+  pembahasan: `Struktur eksposisi yang umum: pernyataan umum, argumen, penegasan ulang.`
+},
+{
+  passage: `(Bacaan 8) Teks eksposisi biasanya diawali pernyataan umum, diikuti argumen dan bukti, lalu penegasan kembali. Kejelasan struktur membantu pembaca memahami klaim penulis.`,
+  q: `Fungsi penegasan ulang adalah...`,
+  options: [
+    "Memperkenalkan topik baru",
+    "Menguatkan kembali klaim utama",
+    "Menghilangkan bukti",
+    "Menambah kata-kata tak relevan",
+    "Mengubah gaya bahasa"
+  ],
+  correct: 1,
+  pembahasan: `Penegasan ulang memperkuat klaim utama yang telah dipaparkan.`
+},
+{
+  passage: `(Bacaan 8) Teks eksposisi biasanya diawali pernyataan umum, diikuti argumen dan bukti, lalu penegasan kembali. Kejelasan struktur membantu pembaca memahami klaim penulis.`,
+  q: `Jenis bukti yang paling kuat untuk mendukung argumen adalah...`,
+  options: [
+    "Data empiris dan studi relevan",
+    "Opini anonim",
+    "Cerita fiksi",
+    "Kata-kata emosional tanpa bukti",
+    "Spekulasi"
+  ],
+  correct: 0,
+  pembahasan: `Bukti empiris dan studi relevan paling memperkuat klaim.`
+},
+
+/* 25-27 Passage 9 (majas & sastra) */
+{
+  passage: `(Bacaan 9) Majas seperti metafora dan simile memberi dimensi estetis pada teks sastra. Namun, penggunaan majas harus relevan dengan tema agar tidak mengaburkan makna.`,
+  q: `Fungsi majas dalam teks sastra adalah...`,
+  options: [
+    "Hanya untuk panjang kalimat",
+    "Memberi kedalaman makna dan estetika",
+    "Menghapus ide utama",
+    "Menambah kebingungan tanpa tujuan",
+    "Menggantikan fakta"
+  ],
+  correct: 1,
+  pembahasan: `Majas memperkaya makna dan aspek estetika karya sastra.`
+},
+{
+  passage: `(Bacaan 9) Majas seperti metafora dan simile memberi dimensi estetis pada teks sastra. Namun, penggunaan majas harus relevan dengan tema agar tidak mengaburkan makna.`,
+  q: `Majas metafora biasanya berfungsi untuk...`,
+  options: [
+    "Bandingkan dua hal tanpa kata penghubung",
+    "Menghitung jumlah kata",
+    "Menentukan ejaan",
+    "Menghapus makna tersirat",
+    "Menambah daftar istilah"
+  ],
+  correct: 0,
+  pembahasan: `Metafora membandingkan dua hal secara langsung untuk efek makna/estetika.`
+},
+{
+  passage: `(Bacaan 9) Majas seperti metafora dan simile memberi dimensi estetis pada teks sastra. Namun, penggunaan majas harus relevan dengan tema agar tidak mengaburkan makna.`,
+  q: `Dampak majas yang berlebihan adalah...`,
+  options: [
+    "Memperjelas semua ide",
+    "Mengaburkan makna dan membingungkan pembaca",
+    "Meningkatkan presisi ilmiah",
+    "Memperpendek teks",
+    "Menambah bukti empiris"
+  ],
+  correct: 1,
+  pembahasan: `Majas berlebihan dapat mengaburkan makna utama jika tidak relevan.`
+},
+
+/* 28-30 Passage 10 (analisis sintaksis) */
+{
+  passage: `(Bacaan 10) Analisis sintaksis membantu mengidentifikasi fungsi unsur kalimat: subjek, predikat, objek, dan keterangan. Pemahaman unsur ini memudahkan pembaca menilai struktur dan makna kalimat.`,
+  q: `Tujuan analisis sintaksis adalah...`,
+  options: [
+    "Menentukan jenis huruf",
+    "Mengidentifikasi fungsi unsur kalimat",
+    "Mengganti tanda baca",
+    "Mengurangi jumlah kata",
+    "Mengubah paragraf"
+  ],
+  correct: 1,
+  pembahasan: `Analisis sintaksis fokus pada fungsi setiap unsur kalimat.`
+},
+{
+  passage: `(Bacaan 10) Analisis sintaksis membantu mengidentifikasi fungsi unsur kalimat: subjek, predikat, objek, dan keterangan. Pemahaman unsur ini memudahkan pembaca menilai struktur dan makna kalimat.`,
+  q: `Dalam kalimat "Sinta membaca novel di perpustakaan", unsur keterangan ditunjukkan oleh...`,
+  options: [
+    "Sinta",
+    "membaca",
+    "novel",
+    "di perpustakaan",
+    "tidak ada keterangan"
+  ],
+  correct: 3,
+  pembahasan: `"di perpustakaan" berfungsi sebagai keterangan tempat.`
+},
+{
+  passage: `(Bacaan 10) Analisis sintaksis helps memahami fungsi kata dalam kalimat. Dengan mengidentifikasi subjek, predikat, objek, dan keterangan, pembaca dapat menilai struktur dan makna kalimat secara tepat.`,
+  q: `Objek dalam kalimat biasanya menjawab pertanyaan...`,
+  options: [
+    "Siapa atau apa yang dikenai tindakan",
+    "Kapan tindakan terjadi",
+    "Dimana tindakan terjadi",
+    "Mengapa tindakan dilakukan",
+    "Bagaimana suasana hati penulis"
+  ],
+  correct: 0,
+  pembahasan: `Objek menjawab "siapa/apa" yang menjadi sasaran tindakan.`
+}
+]; // end bank
+
+/* ========== DOM refs ========== */
+const loginView = document.getElementById('login-view');
+const examView = document.getElementById('exam-view');
+const confirm1 = document.getElementById('confirm1');
+const confirm2 = document.getElementById('confirm2');
+const resultView = document.getElementById('result-view');
+
+const btnLogin = document.getElementById('btnLogin');
+const usernameInput = document.getElementById('inpUser');
+const passwordInput = document.getElementById('inpPass');
+
+const timerEl = document.getElementById('timer');
+const menuToggle = document.getElementById('menuToggle');
+const drawer = document.getElementById('drawer');
+const qGrid = document.getElementById('qGrid');
+
+const soalArea = document.getElementById('soal-area');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+const btnRagu = document.getElementById('btnRagu');
+const tickRagu = document.getElementById('tickRagu');
+
+const back1 = document.getElementById('back1');
+const submit1 = document.getElementById('submit1');
+const back2 = document.getElementById('back2');
+const submit2 = document.getElementById('submit2');
+
+const scoreBox = document.getElementById('scoreBox');
+const reviewList = document.getElementById('reviewList');
+const btnExit = document.getElementById('btnExit');
+
+/* ========== HELPERS ========== */
+function showView(v){
+  [loginView, examView, confirm1, confirm2, resultView].forEach(x=>x.classList.add('hidden'));
+  v.classList.remove('hidden');
+}
+
+function renderQuestion(){
+  const item = bank[current];
+  soalArea.innerHTML = `
+    <div class="bacaan">${item.passage}</div>
+    <div class="question">Soal ${current+1}: ${item.q}</div>
+    <div class="options">
+      ${item.options.map((op,i)=>`<div class="opt ${answers[current]===i?'selected':''}" data-i="${i}"><strong>${String.fromCharCode(65+i)}.</strong> ${op}</div>`).join('')}
+    </div>
+  `;
+  soalArea.querySelectorAll('.opt').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      answers[current] = parseInt(el.dataset.i);
+      updateQGrid();
+      renderQuestion();
+    });
+  });
+  btnPrev.disabled = current === 0;
+  btnNext.textContent = (current === TOTAL-1) ? 'Selesai' : 'Selanjutnya →';
+  tickRagu.style.background = ragu[current] ? '#fff' : 'transparent';
+}
+
+function renderQGrid(){
+  qGrid.innerHTML = '';
+  for(let i=0;i<TOTAL;i++){
+    const btn = document.createElement('button');
+    btn.className = 'qbtn';
+    btn.textContent = (i+1);
+    if(answers[i] != null){
+      const b = document.createElement('div'); b.className = 'badge'; b.textContent = String.fromCharCode(65+answers[i]); btn.appendChild(b);
+      btn.classList.add('answered');
+    }
+    if(ragu[i]) btn.classList.add('ragu');
+    btn.addEventListener('click', ()=>{ current = i; renderQuestion(); drawer.classList.add('hidden'); });
+    qGrid.appendChild(btn);
+  }
+}
+
+function updateQGrid(){
+  const kids = qGrid.children;
+  for(let i=0;i<kids.length;i++){
+    const btn = kids[i];
+    btn.classList.remove('answered','ragu');
+    const old = btn.querySelector('.badge'); if(old) old.remove();
+    if(answers[i] != null){ const b = document.createElement('div'); b.className='badge'; b.textContent=String.fromCharCode(65+answers[i]); btn.appendChild(b); btn.classList.add('answered'); }
+    if(ragu[i]) btn.classList.add('ragu');
+  }
+}
+
+function renderReview(){
+  reviewList.innerHTML = '';
+  bank.forEach((s,i)=>{
+    const user = answers[i];
+    const correct = s.correct;
+    const wrap = document.createElement('div'); wrap.className='review-item';
+    wrap.innerHTML = `
+      <div class="bacaan">${s.passage}</div>
+      <p><strong>Soal ${i+1}:</strong> ${s.q}</p>
+      <p>Jawaban Anda: <span class="${user===correct?'label-correct':'label-wrong'}">${user==null?'-':String.fromCharCode(65+user)}</span></p>
+      <p>Jawaban benar: <span class="label-correct">${String.fromCharCode(65+correct)}</span></p>
+      <p><strong>Pembahasan:</strong> ${s.pembahasan}</p>
+    `;
+    reviewList.appendChild(wrap);
+  });
+}
+
+/* ========== TIMER ========== */
+function updateTimerUI(){
+  const m = String(Math.floor(Math.max(0,timeLeft)/60)).padStart(2,'0');
+  const s = String(Math.max(0,timeLeft)%60).padStart(2,'0');
+  timerEl.textContent = `${m}:${s}`;
+}
+function startTimer(){
+  if(timerInterval) return;
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateTimerUI();
+    if(timeLeft === 30 && !warned30){
+      warned30 = true;
+      alert('Peringatan: 30 detik tersisa!');
+    }
+    if(timeLeft <= 0){
+      clearInterval(timerInterval); timerInterval = null;
+      finalizeAndShowResult();
+    }
+  },1000);
+}
+
+/* ========== EVENTS ========== */
+btnLogin.addEventListener('click', ()=>{
+  if(!usernameInput.value.trim() || !passwordInput.value.trim()){ alert('Isi username dan password terlebih dahulu.'); return; }
+  loggedIn = true;
+  // reset state fresh when login
+  answers = Array(TOTAL).fill(null);
+  ragu = Array(TOTAL).fill(false);
+  current = 0;
+  timeLeft = 60 * 60;
+  warned30 = false;
+  renderQGrid();
+  renderQuestion();
+  showView(examView);
+  startTimer();
+});
+
+menuToggle.addEventListener('click', ()=>{ drawer.classList.toggle('hidden'); });
+
+btnPrev.addEventListener('click', ()=>{ if(current>0){ current--; renderQuestion(); } });
+btnNext.addEventListener('click', ()=>{ if(current < TOTAL-1){ current++; renderQuestion(); } else { showView(confirm1); } });
+
+btnRagu.addEventListener('click', ()=>{ ragu[current] = !ragu[current]; updateQGrid(); renderQuestion(); });
+
+back1.addEventListener('click', ()=>{ current = TOTAL-1; showView(examView); renderQuestion(); });
+submit1.addEventListener('click', ()=>{ showView(confirm2); });
+
+back2.addEventListener('click', ()=>{ current = TOTAL-1; showView(examView); renderQuestion(); });
+submit2.addEventListener('click', ()=>{ finalizeAndShowResult(); });
+
+function finalizeAndShowResult(){
+  if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+  // score
+  let correctCount = 0;
+  for(let i=0;i<TOTAL;i++) if(answers[i] === bank[i].correct) correctCount++;
+  const score = (correctCount / TOTAL) * 100;
+  scoreBox.textContent = score.toFixed(2);
+  renderReview();
+  showView(resultView);
+}
+
+btnExit.addEventListener('click', ()=>{ location.reload(); });
+
+/* security: leave tab -> reset answers & return to login (timer keeps running) */
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden && loggedIn){
+    answers = Array(TOTAL).fill(null);
+    ragu = Array(TOTAL).fill(false);
+    loggedIn = false;
+    showView(loginView);
+    alert('Anda meninggalkan tab — ujian dibatalkan dan jawaban di-reset. Silakan login kembali jika ingin melanjutkan (timer tetap berjalan).');
+  }
+});
+
+/* disable right-click & some keys */
+document.addEventListener('contextmenu', e=>e.preventDefault());
+document.addEventListener('keydown', e=>{ if(e.ctrlKey && (e.key==='c'||e.key==='v'||e.key==='x'||e.key==='s')) e.preventDefault(); if(e.key==='F12') e.preventDefault(); });
+
+/* init UI (login visible only) */
+updateTimerUI();
+renderQGrid();
+renderQuestion();
+showView(loginView);
+</script>
+</body>
+</html>
